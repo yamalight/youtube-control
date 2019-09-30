@@ -35,38 +35,33 @@ export const loadChannels = async () => {
   return channels;
 };
 
-export const loadData = async () => {
-  const cache = await getStorage('cache');
+export const loadChannel = async ch => {
+  const cache = await getStorage(ch.name);
   if (cache) {
     return cache;
   }
 
-  const channels = await loadChannels();
+  const {url} = ch;
+  const body = await fetch(`${url}/videos`).then(r => r.text());
+  const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
+  const regexRes = jsonRegex.exec(body);
+  const obj = JSON.parse(`{${regexRes[1]}}`);
 
-  const ch = channels.find(ch => ch.name === 'Jesse Cox');
+  const videos =
+    obj.contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.sectionListRenderer.contents[0]
+      .itemSectionRenderer.contents[0].gridRenderer.items;
 
-  const fetchChannel = async ({url}) => {
-    const body = await fetch(`${url}/videos`).then(r => r.text());
-    const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
-    const regexRes = jsonRegex.exec(body);
-    const obj = JSON.parse(`{${regexRes[1]}}`);
-
-    const videos =
-      obj.contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.sectionListRenderer.contents[0]
-        .itemSectionRenderer.contents[0].gridRenderer.items;
-
-    const res = videos.map(({gridVideoRenderer: vid}) => ({
-      thumbnail: vid.thumbnail.thumbnails[0].url,
-      title: vid.title.simpleText,
-      publishedTime: vid.publishedTimeText.simpleText,
-      viewCount: vid.viewCountText.simpleText,
-      watched: vid.thumbnailOverlays[0].thumbnailOverlayResumePlaybackRenderer.percentDurationWatched,
-      url: `https://www.youtube.com${vid.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-    }));
-    return res;
-  };
-
-  const d = await fetchChannel(ch);
-  chrome.storage.local.set({cache: d});
-  return d;
+  const res = videos.map(({gridVideoRenderer: vid}) => ({
+    thumbnail: vid.thumbnail.thumbnails[0].url,
+    title: vid.title.simpleText,
+    publishedTime: vid.publishedTimeText.simpleText,
+    viewCount: vid.viewCountText.simpleText,
+    watched: vid.thumbnailOverlays.find(it => it.thumbnailOverlayResumePlaybackRenderer !== undefined)
+      ? vid.thumbnailOverlays.find(it => it.thumbnailOverlayResumePlaybackRenderer !== undefined)
+          .thumbnailOverlayResumePlaybackRenderer.percentDurationWatched
+      : 0,
+    url: `https://www.youtube.com${vid.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
+  }));
+  chrome.storage.local.set({[ch.name]: res});
+  return res;
 };

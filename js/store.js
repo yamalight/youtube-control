@@ -1,4 +1,4 @@
-import {getStorage} from './api.js';
+import {getStorage, loadChannel} from './api.js';
 import html from './html.js';
 import React from '/libs/react.js';
 
@@ -13,8 +13,12 @@ const init = async () => {
   return {};
 };
 
+let channelDataTemp = {};
+
 const useSetupStore = () => {
+  const [hideWatched, setHideWatched] = React.useState(true);
   const [channels, setChannels] = React.useState([]);
+  const [channelData, setChannelData] = React.useState({});
 
   React.useEffect(() => {
     init().then(store => {
@@ -38,7 +42,43 @@ const useSetupStore = () => {
     updateChannels(newChannels);
   };
 
-  return {channels, addChannel, updateChannels};
+  const loadChannelData = async ch => {
+    const data = await loadChannel(ch);
+    console.log('loaded data for', ch.name, channelDataTemp);
+    const newChannelData = {...channelDataTemp, [ch.name]: data};
+    console.log('got new channel data:', newChannelData);
+    channelDataTemp = newChannelData;
+    setChannelData(channelDataTemp);
+  };
+
+  const toggleWatched = () => setHideWatched(!hideWatched);
+
+  const setViewed = ({channel, video}) => {
+    const newChannelData = {
+      ...channelData,
+      [channel.name]: channelData[channel.name].map(vid => {
+        if (vid.title === video.title) {
+          return {...vid, watched: 100};
+        }
+        return vid;
+      }),
+    };
+    chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
+    setChannelData(newChannelData);
+  };
+
+  const setAllViewed = channel => {
+    const newChannelData = {
+      ...channelData,
+      [channel.name]: channelData[channel.name].map(vid => {
+        return {...vid, watched: 100};
+      }),
+    };
+    chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
+    setChannelData(newChannelData);
+  };
+
+  return {channels, channelData, hideWatched, addChannel, loadChannelData, toggleWatched, setViewed, setAllViewed};
 };
 
 export function useStore(storeInit) {

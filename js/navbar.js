@@ -85,6 +85,7 @@ const Modal = ({close, channels}) => {
 
 export default ({channels}) => {
   const [showModal, setModal] = React.useState(false);
+  const store = useStore();
 
   return html`
     <nav className="flex items-center justify-between flex-wrap bg-gray-800 p-4">
@@ -99,6 +100,13 @@ export default ({channels}) => {
             onClick=${() => setModal(!showModal)}
           >
             Add channel
+          </a>
+          <a
+            href="#"
+            className="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4"
+            onClick=${() => store.toggleWatched()}
+          >
+            ${store.hideWatched ? 'Show watched' : 'Hide watched'}
           </a>
         </div>
         <div>
