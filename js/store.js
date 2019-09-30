@@ -5,15 +5,23 @@ import React from '/libs/react.js';
 const StoreContext = React.createContext();
 
 const init = async () => {
+  const result = {};
+
   const channels = await getStorage('subscribedChannels');
-  console.log('loaded store:', channels);
   if (channels) {
-    return {channels};
+    result.channels = channels;
   }
-  return {};
+
+  const locallyViewed = await getStorage('locallyViewed');
+  if (locallyViewed) {
+    result.locallyViewed = locallyViewed;
+  }
+
+  return result;
 };
 
 let channelDataTemp = {};
+let locallyViewed = [];
 
 const useSetupStore = () => {
   const [hideWatched, setHideWatched] = React.useState(true);
@@ -25,8 +33,16 @@ const useSetupStore = () => {
       if (store.channels) {
         setChannels(store.channels);
       }
+      if (store.locallyViewed) {
+        locallyViewed = store.locallyViewed;
+      }
     });
   }, []);
+
+  const addLocallyViewed = vid => {
+    locallyViewed = [...locallyViewed, vid];
+    chrome.storage.local.set({locallyViewed: locallyViewed});
+  };
 
   const updateChannels = channels => {
     setChannels(channels);
@@ -44,9 +60,16 @@ const useSetupStore = () => {
 
   const loadChannelData = async ch => {
     const data = await loadChannel(ch);
-    console.log('loaded data for', ch.name, channelDataTemp);
-    const newChannelData = {...channelDataTemp, [ch.name]: data};
-    console.log('got new channel data:', newChannelData);
+    const newChannelData = {
+      ...channelDataTemp,
+      [ch.name]: data.map(vid => {
+        const viewed = locallyViewed.find(v => v.title === vid.title);
+        if (viewed) {
+          return viewed;
+        }
+        return vid;
+      }),
+    };
     channelDataTemp = newChannelData;
     setChannelData(channelDataTemp);
   };
@@ -58,7 +81,9 @@ const useSetupStore = () => {
       ...channelData,
       [channel.name]: channelData[channel.name].map(vid => {
         if (vid.title === video.title) {
-          return {...vid, watched: 100};
+          const newVid = {...vid, watched: 100};
+          addLocallyViewed(newVid);
+          return newVid;
         }
         return vid;
       }),
@@ -71,14 +96,41 @@ const useSetupStore = () => {
     const newChannelData = {
       ...channelData,
       [channel.name]: channelData[channel.name].map(vid => {
-        return {...vid, watched: 100};
+        const newVid = {...vid, watched: 100};
+        addLocallyViewed(newVid);
+        return newVid;
       }),
     };
     chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
     setChannelData(newChannelData);
   };
 
-  return {channels, channelData, hideWatched, addChannel, loadChannelData, toggleWatched, setViewed, setAllViewed};
+  const refresh = async () => {
+    const newChannelData = {};
+    for (const channel of channels) {
+      const res = await loadChannel(channel, {ignoreCache: true});
+      newChannelData[channel.name] = res.map(vid => {
+        const viewed = locallyViewed.find(v => v.title === vid.title);
+        if (viewed) {
+          return viewed;
+        }
+        return vid;
+      });
+    }
+    setChannelData(newChannelData);
+  };
+
+  return {
+    channels,
+    channelData,
+    hideWatched,
+    addChannel,
+    loadChannelData,
+    toggleWatched,
+    setViewed,
+    setAllViewed,
+    refresh,
+  };
 };
 
 export function useStore(storeInit) {

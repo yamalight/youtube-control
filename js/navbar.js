@@ -112,7 +112,8 @@ export default ({channels}) => {
         <div>
           <a
             href="#"
-            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
+            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-600 hover:bg-white mt-4 lg:mt-0"
+            onClick=${() => store.refresh()}
             >Refresh</a
           >
         </div>

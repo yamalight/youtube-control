@@ -35,9 +35,9 @@ export const loadChannels = async () => {
   return channels;
 };
 
-export const loadChannel = async ch => {
+export const loadChannel = async (ch, {ignoreCache = false} = {}) => {
   const cache = await getStorage(ch.name);
-  if (cache) {
+  if (cache && !ignoreCache) {
     return cache;
   }
 
