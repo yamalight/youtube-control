@@ -1,5 +1,12 @@
 /* global chrome */
-const main = async () => {
+const getStorage = key => new Promise(r => chrome.storage.local.get([key], result => r(result[key])));
+
+const loadData = async () => {
+  const cache = await getStorage('cache');
+  if (cache) {
+    return cache;
+  }
+
   const body = await fetch('https://www.youtube.com').then(r => r.text());
   const jsonRegex = /var ytInitialGuideData = {(.+?)};\n/gi;
   const res = jsonRegex.exec(body);
@@ -25,18 +32,6 @@ const main = async () => {
       original: it,
     }));
 
-  const container = document.getElementById('container');
-  /*const html = channels
-    .map(
-      ch => `
-<div>
-  <a href="${ch.url}"><h3>${ch.name}</h3></a>
-  <img src="${ch.thumbnail}" />
-</div>
-  `
-    )
-    .join('');*/
-
   const ch = channels.find(ch => ch.name === 'Jesse Cox');
 
   const fetchChannel = async ({url}) => {
@@ -45,7 +40,9 @@ const main = async () => {
     const regexRes = jsonRegex.exec(body);
     const obj = JSON.parse(`{${regexRes[1]}}`);
 
-    const videos = obj.contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.sectionListRenderer.contents[0].itemSectionRenderer.contents[0].gridRenderer.items;
+    const videos =
+      obj.contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.sectionListRenderer.contents[0]
+        .itemSectionRenderer.contents[0].gridRenderer.items;
 
     const res = videos.map(({gridVideoRenderer: vid}) => ({
       thumbnail: vid.thumbnail.thumbnails[0].url,
@@ -59,9 +56,38 @@ const main = async () => {
   };
 
   const d = await fetchChannel(ch);
+  chrome.storage.local.set({cache: d});
+  return d;
+};
 
-  let html = `<h1>Videos:</h1>`;
-  html += `<div><pre>${JSON.stringify(d, null, 2)}</pre></div>`;
+const main = async () => {
+  const data = await loadData();
+
+  let html = `
+<h1>Videos:</h1>
+<div class="flex flex-col w-full flex-wrap">
+`;
+  html += data
+    .filter(it => it.watched < 90)
+    .map(
+      it => `
+<div class="flex flex-wrap">
+  <div class="flex w-full m-4">
+    <div class="flex items-center">
+      <img src="${it.thumbnail}" class="h-20 w-32" />
+      <div class="flex flex-col p-4">
+        <h2 class="font-bold text-lg text-tial-400"><a href="${it.url}">${it.title}</a></h2>
+        <span class="font-light text-sm">Published ${it.publishedTime}</span>
+        <span class="font-light text-sm">Watched: ${it.watched}%</span>
+      </div>
+    </div>
+  </div>
+</div>
+  `
+    )
+    .join('');
+  // html += `<div><pre>${JSON.stringify(d, null, 2)}</pre></div>`;
+  html += `</div>`;
   container.innerHTML = html;
 };
 
