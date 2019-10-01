@@ -1,8 +1,5 @@
+import {useEffect, useState} from 'react';
 import {getStorage, loadChannel} from './api.js';
-import html from './html.js';
-import React from '/libs/react.js';
-
-const StoreContext = React.createContext();
 
 const init = async () => {
   const result = {};
@@ -23,12 +20,12 @@ const init = async () => {
 let channelDataTemp = {};
 let locallyViewed = [];
 
-const useSetupStore = () => {
-  const [hideWatched, setHideWatched] = React.useState(true);
-  const [channels, setChannels] = React.useState([]);
-  const [channelData, setChannelData] = React.useState({});
+export const store = () => {
+  const [hideWatched, setHideWatched] = useState(true);
+  const [channels, setChannels] = useState([]);
+  const [channelData, setChannelData] = useState({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     init().then(store => {
       if (store.channels) {
         setChannels(store.channels);
@@ -131,17 +128,4 @@ const useSetupStore = () => {
     setAllViewed,
     refresh,
   };
-};
-
-export function useStore(storeInit) {
-  const store = React.useContext(StoreContext);
-  return store;
-}
-
-export const StoreProvider = ({children}) => {
-  const store = useSetupStore();
-
-  return html`
-    <${StoreContext.Provider} value=${store}>${children}</${StoreContext.Provider}>
-  `;
 };
