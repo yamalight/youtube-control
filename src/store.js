@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {getStorage, loadChannel} from './api.js';
+import {getStorage, loadChannel, loadChannels} from './api.js';
 
 const init = async () => {
   const result = {};
@@ -21,9 +21,11 @@ let channelDataTemp = {};
 let locallyViewed = [];
 
 export const store = () => {
+  const [loadingMessage, setLoading] = useState('');
   const [hideWatched, setHideWatched] = useState(true);
   const [channels, setChannels] = useState([]);
   const [channelData, setChannelData] = useState({});
+  const [allChannels, setAllChannels] = useState([]);
 
   useEffect(() => {
     init().then(store => {
@@ -35,6 +37,13 @@ export const store = () => {
       }
     });
   }, []);
+
+  const loadAllChannels = async () => {
+    setLoading('Loading channels list..');
+    const chs = await loadChannels();
+    setAllChannels(chs);
+    setLoading('');
+  };
 
   const addLocallyViewed = vid => {
     locallyViewed = [...locallyViewed, vid];
@@ -56,6 +65,7 @@ export const store = () => {
   };
 
   const loadChannelData = async ch => {
+    setLoading(`Loading videos for ${ch.name}`);
     const data = await loadChannel(ch);
     const newChannelData = {
       ...channelDataTemp,
@@ -69,6 +79,7 @@ export const store = () => {
     };
     channelDataTemp = newChannelData;
     setChannelData(channelDataTemp);
+    setLoading('');
   };
 
   const toggleWatched = () => setHideWatched(!hideWatched);
@@ -103,6 +114,8 @@ export const store = () => {
   };
 
   const refresh = async () => {
+    let loaded = 0;
+    setLoading(`Loading videos: ${loaded}/${channels.length} channels`);
     const newChannelData = {};
     for (const channel of channels) {
       const res = await loadChannel(channel, {ignoreCache: true});
@@ -113,11 +126,16 @@ export const store = () => {
         }
         return vid;
       });
+      setLoading(`Loading videos: ${++loaded}/${channels.length} channels`);
     }
     setChannelData(newChannelData);
+    setLoading('');
   };
 
   return {
+    loadingMessage,
+    allChannels,
+    loadAllChannels,
     channels,
     channelData,
     hideWatched,
