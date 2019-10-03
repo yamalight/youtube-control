@@ -60,6 +60,10 @@ export default ({channel}) => {
     hideWatched ? ep.watched < WATCHED_THRESHOLD : true
   );
 
+  if (!episodes.length && hideWatched) {
+    return <div />;
+  }
+
   return (
     <div className="flex flex-col shadow border rounded lg:m-2 w-full sm:w-1/2 md:w-1/2 lg:w-1/4 max-h-view overflow-auto">
       <div className="flex flex-wrap shadow border rounded-lg h-20">

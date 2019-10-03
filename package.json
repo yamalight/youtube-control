@@ -1,11 +1,12 @@
 {
   "name": "youtube-control",
-  "version": "0.1.0",
-  "description": "This is WIP, no docs, screenshots, or anything really for now.",
+  "version": "1.0.0",
+  "description": "Simple lists of videos for your Youtube subscriptions (like Video Deck)",
   "main": "index.js",
   "scripts": {
     "watch": "rollup -c --watch",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dist": "rm -rf release && mkdir release && cp manifest.json release && cp main.html release && cp icon.png release && cp -r dist release && cp -r js release"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-postcss": "^2.0.3",
-    "rollup-plugin-replace": "^2.2.0"
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^5.1.2"
   }
 }

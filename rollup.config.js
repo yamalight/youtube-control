@@ -3,6 +3,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import replace from 'rollup-plugin-replace';
+import {terser} from 'rollup-plugin-terser';
 
 // watch -> dev, build -> prod
 const production = !process.env.ROLLUP_WATCH;
@@ -17,6 +18,7 @@ export default {
   plugins: [
     postcss({
       extract: true,
+      minimize: production,
     }),
     resolve({browser: true}),
     commonjs({
@@ -39,5 +41,6 @@ export default {
     replace({
       'process.env.NODE_ENV': production ? JSON.stringify('production') : JSON.stringify('development'),
     }),
+    production && terser(),
   ],
 };

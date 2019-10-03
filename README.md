@@ -1,3 +1,4 @@
-# YouTube Control
+# Mission Control for Youtube
 
-This is WIP, no docs, screenshots, or anything really for now.
+Simple lists of videos for your Youtube subscriptions.  
+Free, open source replacement for Youtube Video Deck.

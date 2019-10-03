@@ -95,19 +95,19 @@ export const store = () => {
       return;
     }
     const newChannels = [...channels, channel];
-    loadChannelData(channel);
+    loadChannelData(channel, {forceLoad: true});
     updateChannels(newChannels);
   };
 
-  const loadChannelData = async ch => {
+  const loadChannelData = async (ch, {forceLoad} = {}) => {
     setLoading(`Loading videos for ${ch.name}..`);
-    const data = await loadChannel(ch);
+    const data = await loadChannel(ch, {ignoreCache: forceLoad});
     const newChannelData = {
       ...channelData,
       [ch.name]: data.map(vid => {
         const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
-          return viewed;
+          return {...vid, watched: 100};
         }
         return vid;
       }),
@@ -171,7 +171,7 @@ export const store = () => {
       newChannelData[channel.name] = res.map(vid => {
         const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
-          return viewed;
+          return {...vid, watched: 100};
         }
         return vid;
       });
