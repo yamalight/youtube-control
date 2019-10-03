@@ -6,17 +6,17 @@ const Channel = ({channel, close}) => {
   const {addChannel} = useStore(store);
 
   const addSelectedChannel = ch => {
-    store.addChannel(channel);
+    addChannel(channel);
     close();
   };
 
   return (
-    <div class="flex flex-wrap shadow border rounded-lg  m-2">
-      <div class="flex w-full">
-        <div class="flex items-center">
-          <img src={channel.thumbnail} class="h-16 w-16 rounded-lg m-2" />
-          <div class="flex flex-col p-4">
-            <h2 class="font-bold text-lg text-tial-400">
+    <div className="flex flex-wrap shadow border rounded-lg  m-2">
+      <div className="flex w-full">
+        <div className="flex items-center">
+          <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
+          <div className="flex flex-col p-4">
+            <h2 className="font-bold text-lg text-tial-400">
               <a href="#" onClick={() => addSelectedChannel(channel)}>
                 {channel.name}
               </a>
@@ -52,7 +52,7 @@ const Modal = ({close, allChannels}) => {
             {allChannels
               .filter(ch => !channels.find(storeCh => storeCh.name === ch.name))
               .map(channel => (
-                <Channel channel={channel} close={close} />
+                <Channel key={channel.url} channel={channel} close={close} />
               ))}
           </div>
           <div className="flex justify-end pt-2">

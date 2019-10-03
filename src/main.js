@@ -16,11 +16,11 @@ const App = () => {
   }, []);
 
   return (
-    <div class="flex flex-col">
+    <div className="flex flex-col">
       <Navbar channels={allChannels} />
-      <div class="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center">
         {channels.map(ch => (
-          <Channel channel={ch} />
+          <Channel key={ch.url} channel={ch} />
         ))}
       </div>
     </div>
