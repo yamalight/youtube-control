@@ -20,7 +20,6 @@ const initFromCache = async () => {
   return result;
 };
 
-let channelDataTemp = {};
 let locallyViewed = [];
 
 export const store = () => {
@@ -31,6 +30,7 @@ export const store = () => {
   const [allChannels, setAllChannels] = useState([]);
   const loadingRef = useRef();
 
+  // throttle loading message by 300ms to evade flashing loader
   const setLoading = msg => {
     if (loadingRef.current) {
       clearTimeout(loadingRef.current);
@@ -53,10 +53,8 @@ export const store = () => {
     if (cache.locallyViewed) {
       locallyViewed = cache.locallyViewed;
     }
-    // if forcing update - reload videos too
-    if (forceUpdate) {
-      await refresh(cache.channels);
-    }
+    // reload videos too
+    await refresh({givenChannels: cache.channels, forceUpdate});
     // load all channels list
     await loadAllChannels({forceUpdate});
     // save new init datetime
@@ -86,6 +84,7 @@ export const store = () => {
     }
     const newChannels = [...channels, channel];
     console.log('adding channel:', newChannels);
+    loadChannelData(channel);
     updateChannels(newChannels);
   };
 
@@ -93,7 +92,7 @@ export const store = () => {
     setLoading(`Loading videos for ${ch.name}..`);
     const data = await loadChannel(ch);
     const newChannelData = {
-      ...channelDataTemp,
+      ...channelData,
       [ch.name]: data.map(vid => {
         const viewed = locallyViewed.find(v => v.title === vid.title);
         if (viewed) {
@@ -102,8 +101,7 @@ export const store = () => {
         return vid;
       }),
     };
-    channelDataTemp = newChannelData;
-    setChannelData(channelDataTemp);
+    setChannelData(newChannelData);
     setLoading('');
   };
 
@@ -138,13 +136,13 @@ export const store = () => {
     setChannelData(newChannelData);
   };
 
-  const refresh = async givenChannels => {
+  const refresh = async ({givenChannels, forceUpdate = true} = {}) => {
     const chans = givenChannels || channels;
     let loaded = 0;
     setLoading(`Loading videos: ${loaded}/${chans.length} channels`);
     const newChannelData = {};
     for (const channel of chans) {
-      const res = await loadChannel(channel, {ignoreCache: true});
+      const res = await loadChannel(channel, {ignoreCache: forceUpdate});
       newChannelData[channel.name] = res.map(vid => {
         const viewed = locallyViewed.find(v => v.title === vid.title);
         if (viewed) {
@@ -156,6 +154,12 @@ export const store = () => {
     }
     setChannelData(newChannelData);
     setLoading('');
+  };
+
+  const removeChannel = channel => {
+    const newChannels = channels.filter(ch => ch.name !== channel.name);
+    console.log('removing channel:', newChannels);
+    updateChannels(newChannels);
   };
 
   return {
@@ -172,5 +176,6 @@ export const store = () => {
     setViewed,
     setAllViewed,
     refresh,
+    removeChannel,
   };
 };

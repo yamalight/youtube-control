@@ -48,8 +48,12 @@ export const loadChannel = async (ch, {ignoreCache = false} = {}) => {
   const obj = JSON.parse(`{${regexRes[1]}}`);
 
   const videos =
-    obj.contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.sectionListRenderer.contents[0]
-      .itemSectionRenderer.contents[0].gridRenderer.items;
+    obj.contents?.twoColumnBrowseResultsRenderer?.tabs?.[1]?.tabRenderer?.content?.sectionListRenderer?.contents?.[0]
+      ?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items;
+
+  if (!videos) {
+    return [];
+  }
 
   const res = videos.map(({gridVideoRenderer: vid}) => ({
     thumbnail: vid.thumbnail.thumbnails[0].url,

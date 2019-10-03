@@ -2,6 +2,8 @@ import {useStore} from 'outstated';
 import React, {useState} from 'react';
 import {store} from './store.js';
 
+const WATCHED_THRESHOLD = 85;
+
 const Video = ({data, channel}) => {
   const [displayViewed, setDisplayViewed] = useState(false);
   const {setViewed} = useStore(store);
@@ -17,7 +19,7 @@ const Video = ({data, channel}) => {
           <div className="w-1/4">
             <img src={data.thumbnail} className="w-full" />
             <div className="border-b border-4 border-red-600 shadow-lg rounded" style={{width: data.watched + '%'}} />
-            {displayViewed && data.watched < 95 ? (
+            {displayViewed && data.watched < WATCHED_THRESHOLD ? (
               <a
                 href="#"
                 className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-2 inline-flex items-center"
@@ -51,24 +53,29 @@ const Video = ({data, channel}) => {
 };
 
 export default ({channel}) => {
-  const {loadChannelData, channelData, hideWatched} = useStore(store);
+  const {channelData, hideWatched, removeChannel} = useStore(store);
+  const [showRemove, setShowRemove] = useState(false);
 
-  React.useEffect(() => {
-    loadChannelData(channel);
-  }, [channel.url]);
-
-  const episodes = (channelData[channel.name] || []).filter(ep => (hideWatched ? ep.watched < 90 : true));
-
-  if (!episodes.length) {
-    return <div />;
-  }
+  const episodes = (channelData[channel.name] || []).filter(ep =>
+    hideWatched ? ep.watched < WATCHED_THRESHOLD : true
+  );
 
   return (
     <div className="flex flex-col shadow border rounded lg:m-2 w-full sm:w-1/2 md:w-1/2 lg:w-1/4 max-h-view overflow-auto">
       <div className="flex flex-wrap shadow border rounded-lg h-20">
         <div className="flex w-full h-20  ">
-          <div className="flex flex-1 items-center">
+          <div
+            className="flex flex-1 items-center"
+            onMouseEnter={() => setShowRemove(true)}
+            onMouseLeave={() => setShowRemove(false)}
+            onClick={() => removeChannel(channel)}>
             <img src={channel.thumbnail} className="h-16 rounded-lg m-2" />
+            {showRemove && (
+              <div className="rounded-lg bg-black static w-16 h-16 rm-channel text-2xl text-white items-center flex justify-center">
+                X
+              </div>
+            )}
+
             <div className="flex flex-col flex-1 p-4">
               <h2 className="font-bold text-lg text-tial-400">
                 <a href={channel.url}>{channel.name}</a>
@@ -92,9 +99,7 @@ export default ({channel}) => {
           </div>
         </div>
       </div>
-      {episodes.map(ep => (
-        <Video key={ep.url} channel={channel} data={ep} />
-      ))}
+      {episodes.length > 0 && episodes.map(ep => <Video key={ep.url} channel={channel} data={ep} />)}
     </div>
   );
 };

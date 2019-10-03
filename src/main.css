@@ -20,3 +20,10 @@
 .max-h-view {
   max-height: calc(100vh - 100px);
 }
+
+.rm-channel {
+  margin-left: -72px;
+  margin-right: 8px;
+  opacity: 0.5;
+  cursor: pointer;
+}
