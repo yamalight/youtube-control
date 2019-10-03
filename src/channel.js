@@ -53,7 +53,7 @@ const Video = ({data, channel}) => {
 };
 
 export default ({channel}) => {
-  const {channelData, hideWatched, removeChannel} = useStore(store);
+  const {channelData, hideWatched, removeChannel, setAllViewed} = useStore(store);
   const [showRemove, setShowRemove] = useState(false);
 
   const episodes = (channelData[channel.name] || []).filter(ep =>
@@ -67,11 +67,12 @@ export default ({channel}) => {
           <div
             className="flex flex-1 items-center"
             onMouseEnter={() => setShowRemove(true)}
-            onMouseLeave={() => setShowRemove(false)}
-            onClick={() => removeChannel(channel)}>
+            onMouseLeave={() => setShowRemove(false)}>
             <img src={channel.thumbnail} className="h-16 rounded-lg m-2" />
             {showRemove && (
-              <div className="rounded-lg bg-black static w-16 h-16 rm-channel text-2xl text-white items-center flex justify-center">
+              <div
+                className="rounded-lg bg-black static w-16 h-16 rm-channel text-2xl text-white items-center flex justify-center"
+                onClick={() => removeChannel(channel)}>
                 X
               </div>
             )}
@@ -84,7 +85,7 @@ export default ({channel}) => {
             <a
               href="#"
               className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-2 inline-flex items-center mr-4"
-              onClick={() => store.setAllViewed(channel)}>
+              onClick={() => setAllViewed(channel)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 32 32"

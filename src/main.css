@@ -27,3 +27,9 @@
   opacity: 0.5;
   cursor: pointer;
 }
+
+.undo-alert {
+  top: 68px;
+  right: 2px;
+  cursor: pointer;
+}

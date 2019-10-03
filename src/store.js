@@ -28,7 +28,9 @@ export const store = () => {
   const [channels, setChannels] = useState([]);
   const [channelData, setChannelData] = useState({});
   const [allChannels, setAllChannels] = useState([]);
+  const [undoAlertVisible, setUndoAlertVisible] = useState(false);
   const loadingRef = useRef();
+  const undoRef = useRef();
 
   // throttle loading message by 300ms to evade flashing loader
   const setLoading = msg => {
@@ -38,6 +40,12 @@ export const store = () => {
     loadingRef.current = setTimeout(() => {
       setLoadingMessage(msg);
     }, 300);
+  };
+
+  // show undo alert for 10s
+  const showUndoAlert = () => {
+    setUndoAlertVisible(true);
+    setTimeout(() => setUndoAlertVisible(false), 10000);
   };
 
   const init = async () => {
@@ -72,6 +80,10 @@ export const store = () => {
     locallyViewed = [...locallyViewed, vid.id];
     chrome.storage.local.set({locallyViewed: locallyViewed});
   };
+  const removeLocallyViewed = vid => {
+    locallyViewed = locallyViewed.filter(v => v !== vid.id);
+    chrome.storage.local.set({locallyViewed: locallyViewed});
+  };
 
   const updateChannels = channels => {
     setChannels(channels);
@@ -83,7 +95,6 @@ export const store = () => {
       return;
     }
     const newChannels = [...channels, channel];
-    console.log('adding channel:', newChannels);
     loadChannelData(channel);
     updateChannels(newChannels);
   };
@@ -107,13 +118,19 @@ export const store = () => {
 
   const toggleWatched = () => setHideWatched(!hideWatched);
 
-  const setViewed = ({channel, video}) => {
+  const setViewed = ({channel, video, watched = 100}) => {
     const newChannelData = {
       ...channelData,
       [channel.name]: channelData[channel.name].map(vid => {
         if (vid.title === video.title) {
-          const newVid = {...vid, watched: 100};
-          addLocallyViewed(newVid);
+          const newVid = {...vid, watched};
+          if (watched === 100) {
+            addLocallyViewed(newVid);
+          } else {
+            removeLocallyViewed(newVid);
+          }
+          undoRef.current = () => setViewed({channel, video, watched: 0});
+          showUndoAlert();
           return newVid;
         }
         return vid;
@@ -123,14 +140,22 @@ export const store = () => {
     setChannelData(newChannelData);
   };
 
-  const setAllViewed = channel => {
+  const setAllViewed = (channel, watched = 100) => {
     const newChannelData = {
       ...channelData,
-      [channel.name]: channelData[channel.name].map(vid => {
-        const newVid = {...vid, watched: 100};
-        addLocallyViewed(newVid);
-        return newVid;
-      }),
+      [channel.name]: channelData[channel.name]
+        .filter(vid => (watched === 100 ? vid.watched < 85 : true))
+        .map(vid => {
+          const newVid = {...vid, watched};
+          if (watched === 100) {
+            addLocallyViewed(newVid);
+          } else {
+            removeLocallyViewed(newVid);
+          }
+          undoRef.current = () => setAllViewed(channel, 0);
+          showUndoAlert();
+          return newVid;
+        }),
     };
     chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
     setChannelData(newChannelData);
@@ -158,8 +183,17 @@ export const store = () => {
 
   const removeChannel = channel => {
     const newChannels = channels.filter(ch => ch.name !== channel.name);
-    console.log('removing channel:', newChannels);
     updateChannels(newChannels);
+  };
+
+  const undo = () => {
+    if (!undoRef.current) {
+      setUndoAlertVisible(false);
+      return;
+    }
+
+    undoRef.current();
+    setUndoAlertVisible(false);
   };
 
   return {
@@ -177,5 +211,7 @@ export const store = () => {
     setAllViewed,
     refresh,
     removeChannel,
+    undo,
+    undoAlertVisible,
   };
 };
