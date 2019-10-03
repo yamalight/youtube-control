@@ -1,8 +1,8 @@
 export const getStorage = key => new Promise(r => chrome.storage.local.get([key], result => r(result[key])));
 
-export const loadChannels = async () => {
+export const loadChannels = async ({forceUpdate}) => {
   const cache = await getStorage('channelCache');
-  if (cache) {
+  if (cache && !forceUpdate) {
     return cache;
   }
 

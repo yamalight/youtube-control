@@ -8,10 +8,10 @@ import Navbar from './navbar';
 import {store} from './store';
 
 const App = () => {
-  const {loadingMessage, channels, allChannels, loadAllChannels} = useStore(store);
+  const {loadingMessage, channels, allChannels, init} = useStore(store);
 
   useEffect(() => {
-    loadAllChannels();
+    init();
   }, []);
 
   return (

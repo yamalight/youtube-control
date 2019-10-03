@@ -1,7 +1,10 @@
-import {useEffect, useState} from 'react';
+import {useRef, useState} from 'react';
 import {getStorage, loadChannel, loadChannels} from './api.js';
 
-const init = async () => {
+// force auto-update if opened after 4h
+const RELOAD_EVERY_HOURS = 4;
+
+const initFromCache = async () => {
   const result = {};
 
   const channels = await getStorage('subscribedChannels');
@@ -21,26 +24,48 @@ let channelDataTemp = {};
 let locallyViewed = [];
 
 export const store = () => {
-  const [loadingMessage, setLoading] = useState('');
+  const [loadingMessage, setLoadingMessage] = useState('Initializing..');
   const [hideWatched, setHideWatched] = useState(true);
   const [channels, setChannels] = useState([]);
   const [channelData, setChannelData] = useState({});
   const [allChannels, setAllChannels] = useState([]);
+  const loadingRef = useRef();
 
-  useEffect(() => {
-    init().then(store => {
-      if (store.channels) {
-        setChannels(store.channels);
-      }
-      if (store.locallyViewed) {
-        locallyViewed = store.locallyViewed;
-      }
-    });
-  }, []);
+  const setLoading = msg => {
+    if (loadingRef.current) {
+      clearTimeout(loadingRef.current);
+    }
+    loadingRef.current = setTimeout(() => {
+      setLoadingMessage(msg);
+    }, 300);
+  };
 
-  const loadAllChannels = async () => {
+  const init = async () => {
+    const lastInit = await getStorage('initDate');
+    const initDiffMs = Date.now() - lastInit;
+    const initDiffHours = Math.floor(initDiffMs / 1000 / 60 / 60);
+    const forceUpdate = initDiffHours >= RELOAD_EVERY_HOURS;
+    // load cached data
+    const cache = await initFromCache();
+    if (cache.channels) {
+      setChannels(cache.channels);
+    }
+    if (cache.locallyViewed) {
+      locallyViewed = cache.locallyViewed;
+    }
+    // if forcing update - reload videos too
+    if (forceUpdate) {
+      await refresh(cache.channels);
+    }
+    // load all channels list
+    await loadAllChannels({forceUpdate});
+    // save new init datetime
+    chrome.storage.local.set({initDate: Date.now()});
+  };
+
+  const loadAllChannels = async ({forceUpdate}) => {
     setLoading('Loading channels list..');
-    const chs = await loadChannels();
+    const chs = await loadChannels({forceUpdate});
     setAllChannels(chs);
     setLoading('');
   };
@@ -65,7 +90,7 @@ export const store = () => {
   };
 
   const loadChannelData = async ch => {
-    setLoading(`Loading videos for ${ch.name}`);
+    setLoading(`Loading videos for ${ch.name}..`);
     const data = await loadChannel(ch);
     const newChannelData = {
       ...channelDataTemp,
@@ -113,11 +138,12 @@ export const store = () => {
     setChannelData(newChannelData);
   };
 
-  const refresh = async () => {
+  const refresh = async givenChannels => {
+    const chans = givenChannels || channels;
     let loaded = 0;
-    setLoading(`Loading videos: ${loaded}/${channels.length} channels`);
+    setLoading(`Loading videos: ${loaded}/${chans.length} channels`);
     const newChannelData = {};
-    for (const channel of channels) {
+    for (const channel of chans) {
       const res = await loadChannel(channel, {ignoreCache: true});
       newChannelData[channel.name] = res.map(vid => {
         const viewed = locallyViewed.find(v => v.title === vid.title);
@@ -126,13 +152,14 @@ export const store = () => {
         }
         return vid;
       });
-      setLoading(`Loading videos: ${++loaded}/${channels.length} channels`);
+      setLoading(`Loading videos: ${++loaded}/${chans.length} channels`);
     }
     setChannelData(newChannelData);
     setLoading('');
   };
 
   return {
+    init,
     loadingMessage,
     allChannels,
     loadAllChannels,
