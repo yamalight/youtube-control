@@ -30,6 +30,7 @@ const Channel = ({channel, close}) => {
 
 const Modal = ({close, allChannels}) => {
   const {channels} = useStore(store);
+  const [filter, setFilter] = useState('');
 
   return (
     <div className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster modal-bg">
@@ -49,8 +50,18 @@ const Modal = ({close, allChannels}) => {
             </div>
           </div>
           <div className="my-5 overflow-auto">
+            <div className="w-full p-2">
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                type="text"
+                placeholder="Search channel.."
+                value={filter}
+                onChange={e => setFilter(e.target.value.toLowerCase())}
+              />
+            </div>
             {allChannels
               .filter(ch => !channels.find(storeCh => storeCh.name === ch.name))
+              .filter(ch => ch.name.toLowerCase().includes(filter))
               .map(channel => (
                 <Channel key={channel.url} channel={channel} close={close} />
               ))}
