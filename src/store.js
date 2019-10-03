@@ -31,6 +31,7 @@ export const store = () => {
   const [undoAlertVisible, setUndoAlertVisible] = useState(false);
   const loadingRef = useRef();
   const undoRef = useRef();
+  const undoTimeoutRef = useRef();
 
   // throttle loading message by 300ms to evade flashing loader
   const setLoading = msg => {
@@ -44,8 +45,11 @@ export const store = () => {
 
   // show undo alert for 10s
   const showUndoAlert = () => {
+    if (undoTimeoutRef.current) {
+      clearTimeout(undoTimeoutRef.current);
+    }
     setUndoAlertVisible(true);
-    setTimeout(() => setUndoAlertVisible(false), 10000);
+    undoTimeoutRef.current = setTimeout(() => setUndoAlertVisible(false), 10000);
   };
 
   const init = async () => {

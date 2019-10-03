@@ -23,7 +23,10 @@ const Video = ({data, channel}) => {
               <a
                 href="#"
                 className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-2 inline-flex items-center"
-                onClick={() => setViewed({channel, video: data})}>
+                onClick={e => {
+                  e.preventDefault();
+                  setViewed({channel, video: data});
+                }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 32 32"
@@ -76,7 +79,10 @@ export default ({channel}) => {
             {showRemove && (
               <div
                 className="rounded-lg bg-black static w-16 h-16 rm-channel text-2xl text-white items-center flex justify-center"
-                onClick={() => removeChannel(channel)}>
+                onClick={e => {
+                  e.preventDefault();
+                  removeChannel(channel);
+                }}>
                 X
               </div>
             )}
@@ -89,7 +95,10 @@ export default ({channel}) => {
             <a
               href="#"
               className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-2 inline-flex items-center mr-4"
-              onClick={() => setAllViewed(channel)}>
+              onClick={e => {
+                e.preventDefault();
+                setAllViewed(channel);
+              }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 32 32"
