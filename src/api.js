@@ -56,6 +56,7 @@ export const loadChannel = async (ch, {ignoreCache = false} = {}) => {
   }
 
   const res = videos.map(({gridVideoRenderer: vid}) => ({
+    id: vid.videoId,
     thumbnail: vid.thumbnail.thumbnails[0].url,
     title: vid.title.simpleText,
     publishedTime: vid.publishedTimeText.simpleText,

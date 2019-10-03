@@ -69,7 +69,7 @@ export const store = () => {
   };
 
   const addLocallyViewed = vid => {
-    locallyViewed = [...locallyViewed, vid];
+    locallyViewed = [...locallyViewed, vid.id];
     chrome.storage.local.set({locallyViewed: locallyViewed});
   };
 
@@ -94,7 +94,7 @@ export const store = () => {
     const newChannelData = {
       ...channelData,
       [ch.name]: data.map(vid => {
-        const viewed = locallyViewed.find(v => v.title === vid.title);
+        const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
           return viewed;
         }
@@ -144,7 +144,7 @@ export const store = () => {
     for (const channel of chans) {
       const res = await loadChannel(channel, {ignoreCache: forceUpdate});
       newChannelData[channel.name] = res.map(vid => {
-        const viewed = locallyViewed.find(v => v.title === vid.title);
+        const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
           return viewed;
         }
