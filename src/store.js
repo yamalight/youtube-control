@@ -1,8 +1,8 @@
 import {useRef, useState} from 'react';
 import {getStorage, loadChannel, loadChannels} from './api.js';
 
-// force auto-update if opened after 4h
-const RELOAD_EVERY_HOURS = 4;
+// force auto-update if opened after 1h
+const RELOAD_EVERY_HOURS = 1;
 
 const initFromCache = async () => {
   const result = {};
