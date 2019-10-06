@@ -62,7 +62,7 @@ export const loadChannel = async (ch, {ignoreCache = false} = {}) => {
     thumbnail: vid.thumbnail.thumbnails[0].url,
     title: vid.title.simpleText,
     publishedTime: vid.publishedTimeText.simpleText,
-    viewCount: vid.viewCountText.simpleText,
+    viewCount: vid.viewCountText?.simpleText ?? 0,
     watched: vid.thumbnailOverlays.find(it => it.thumbnailOverlayResumePlaybackRenderer !== undefined)
       ? vid.thumbnailOverlays.find(it => it.thumbnailOverlayResumePlaybackRenderer !== undefined)
           .thumbnailOverlayResumePlaybackRenderer.percentDurationWatched
