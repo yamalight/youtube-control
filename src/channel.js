@@ -6,7 +6,12 @@ const WATCHED_THRESHOLD = 85;
 
 const Video = ({data, channel}) => {
   const [displayViewed, setDisplayViewed] = useState(false);
-  const {setViewed} = useStore(store);
+  const {setViewed, setCurrentVideo} = useStore(store);
+
+  const openVideo = e => {
+    e.preventDefault();
+    setCurrentVideo({video: data, channel});
+  };
 
   return (
     <div
@@ -45,7 +50,9 @@ const Video = ({data, channel}) => {
 
           <div className="flex flex-col flex-1 p-4">
             <h2 className="font-bold text-lg text-tial-400">
-              <a href={data.url}>{data.title}</a>
+              <a href={data.url} onClick={e => openVideo(e)}>
+                {data.title}
+              </a>
             </h2>
             <span className="font-light text-sm">Published {data.publishedTime}</span>
           </div>

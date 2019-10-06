@@ -29,6 +29,7 @@ export const store = () => {
   const [channelData, setChannelData] = useState({});
   const [allChannels, setAllChannels] = useState([]);
   const [undoAlertVisible, setUndoAlertVisible] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState({video: undefined, channel: undefined});
   const loadingRef = useRef();
   const undoRef = useRef();
   const undoTimeoutRef = useRef();
@@ -217,5 +218,7 @@ export const store = () => {
     removeChannel,
     undo,
     undoAlertVisible,
+    currentVideo,
+    setCurrentVideo,
   };
 };
