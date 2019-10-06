@@ -1,6 +1,6 @@
 {
   "name": "youtube-control",
-  "version": "1.0.0-pre1",
+  "version": "1.0.0-pre2",
   "description": "Simple lists of videos for your Youtube subscriptions (like Video Deck)",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@babel/preset-env": "^7.6.2",
     "@babel/preset-react": "^7.0.0",

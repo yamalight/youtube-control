@@ -9,18 +9,17 @@ export const loadChannels = async ({forceUpdate}) => {
   const body = await fetch('https://www.youtube.com').then(r => r.text());
   const jsonRegex = /var ytInitialGuideData = {(.+?)};\n/gi;
   const res = jsonRegex.exec(body);
+  if (!res) {
+    return [];
+  }
   const obj = JSON.parse(`{${res[1]}}`);
-  const {
-    items: [_, subscriptions],
-  } = obj;
-  const {
-    guideSubscriptionsSectionRenderer: {items},
-  } = subscriptions;
+  const items = obj.items?.[1]?.guideSubscriptionsSectionRenderer?.items;
+  if (!items) {
+    return [];
+  }
   const channels = items
-    .map(it =>
-      it.guideCollapsibleEntryRenderer
-        ? it.guideCollapsibleEntryRenderer.expandableItems.map(it => it.guideEntryRenderer)
-        : it.guideEntryRenderer
+    .map(
+      it => it.guideCollapsibleEntryRenderer?.expandableItems.map(it => it.guideEntryRenderer) ?? it.guideEntryRenderer
     )
     .flat()
     .filter(it => it.title !== 'Browse channels')
@@ -45,6 +44,9 @@ export const loadChannel = async (ch, {ignoreCache = false} = {}) => {
   const body = await fetch(`${url}/videos`).then(r => r.text());
   const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
   const regexRes = jsonRegex.exec(body);
+  if (!regexRes) {
+    return [];
+  }
   const obj = JSON.parse(`{${regexRes[1]}}`);
 
   const videos =
