@@ -26,7 +26,7 @@ export const loadChannels = async ({forceUpdate}) => {
     .map(it => ({
       name: it.formattedTitle.simpleText,
       url: `https://www.youtube.com${it.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-      thumbnail: it.thumbnail.thumbnails[0].url,
+      thumbnail: it.thumbnail?.thumbnails?.[0]?.url,
       // original: it,
     }));
 

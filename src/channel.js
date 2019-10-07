@@ -82,7 +82,11 @@ export default ({channel}) => {
             className="flex flex-1 items-center"
             onMouseEnter={() => setShowRemove(true)}
             onMouseLeave={() => setShowRemove(false)}>
-            <img src={channel.thumbnail} className="h-16 rounded-lg m-2" />
+            {channel.thumbnail ? (
+              <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
+            ) : (
+              <div className="h-16 w-16 rounded-lg m-2 border-gray-600 border-solid border-2 bg-gray-600" />
+            )}
             {showRemove && (
               <div
                 className="rounded-lg bg-black static w-16 h-16 rm-channel text-2xl text-white items-center flex justify-center"

@@ -15,7 +15,11 @@ const Channel = ({channel, close}) => {
     <div className="flex flex-wrap shadow border rounded-lg  m-2">
       <div className="flex w-full">
         <div className="flex items-center">
-          <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
+          {channel.thumbnail ? (
+            <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
+          ) : (
+            <div className="h-16 w-16 rounded-lg m-2 border-gray-600 border-solid border-2 bg-gray-600" />
+          )}
           <div className="flex flex-col p-4">
             <h2 className="font-bold text-lg text-tial-400">
               <a href="#" onClick={() => addSelectedChannel(channel)}>
