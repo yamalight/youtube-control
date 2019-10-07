@@ -20,7 +20,7 @@ const App = () => {
       <Navbar channels={allChannels} />
       {undoAlertVisible && <UndoAlert />}
       {currentVideo.video && <Player />}
-      <div className={`flex ${useHorizontalLayout ? 'overflow-auto pl-5' : 'flex-wrap'} justify-center`}>
+      <div className={`flex ${useHorizontalLayout ? 'overflow-auto' : 'flex-wrap justify-center'}`}>
         {allChannels.length > 0 && !channels.length && <h1 className="text-2xl p-6">Start by adding some channels!</h1>}
         {!loadingMessage && allChannels.length === 0 && (
           <Warning title="Couldn't load channels list!">
