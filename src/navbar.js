@@ -8,7 +8,6 @@ const Channel = ({channel, close}) => {
 
   const addSelectedChannel = ch => {
     addChannel(channel);
-    close();
   };
 
   return (

@@ -19,8 +19,8 @@ const App = () => {
 
   return (
     <div className="flex flex-col">
-      <Navbar channels={allChannels} />
       {loadingMessage && <Loader message={loadingMessage} />}
+      <Navbar channels={allChannels} />
       {undoAlertVisible && <UndoAlert />}
       {currentVideo.video && <Player />}
       <div className="flex flex-wrap justify-center">
