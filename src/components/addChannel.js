@@ -1,7 +1,7 @@
 import {useStore} from 'outstated';
 import React, {useState} from 'react';
+import {store} from '../store';
 import ModalWrapper from './modal';
-import {store} from './store.js';
 
 const Channel = ({channel, close}) => {
   const {addChannel} = useStore(store);
@@ -32,7 +32,7 @@ const Channel = ({channel, close}) => {
   );
 };
 
-const Modal = ({close, allChannels}) => {
+export default ({close, allChannels}) => {
   const {channels} = useStore(store);
   const [filter, setFilter] = useState('');
 
@@ -54,45 +54,5 @@ const Modal = ({close, allChannels}) => {
           <Channel key={channel.url} channel={channel} close={close} />
         ))}
     </ModalWrapper>
-  );
-};
-
-export default ({channels}) => {
-  const [showModal, setModal] = useState(false);
-  const {toggleWatched, hideWatched, refresh} = useStore(store);
-
-  return (
-    <>
-      <nav className="flex items-center justify-between flex-wrap bg-gray-800 p-4">
-        <div className="flex items-center flex-shrink-0 text-white mr-6">
-          <span className="font-semibold text-xl tracking-tight">Youtube Control</span>
-        </div>
-        <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-          <div className="text-sm lg:flex-grow">
-            <a
-              href="#"
-              className="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4"
-              onClick={() => setModal(!showModal)}>
-              Add channel
-            </a>
-            <a
-              href="#"
-              className="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4"
-              onClick={() => toggleWatched()}>
-              {hideWatched ? 'Show watched' : 'Hide watched'}
-            </a>
-          </div>
-          <div>
-            <a
-              href="#"
-              className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-gray-600 hover:bg-white mt-4 lg:mt-0"
-              onClick={() => refresh()}>
-              Refresh
-            </a>
-          </div>
-        </div>
-      </nav>
-      {showModal ? <Modal close={() => setModal(false)} allChannels={channels} /> : ''}
-    </>
   );
 };

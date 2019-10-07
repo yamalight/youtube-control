@@ -1,7 +1,7 @@
 import {useStore} from 'outstated';
 import React, {useEffect, useRef} from 'react';
 import YouTubePlayer from 'youtube-player';
-import {store} from './store';
+import {store} from '../store';
 
 const Player = () => {
   const {

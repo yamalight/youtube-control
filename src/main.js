@@ -1,17 +1,14 @@
 import {Provider, useStore} from 'outstated';
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom';
-import Channel from './channel';
-import Loader from './loader';
+import {Channel, Loader, Navbar, Player, UndoAlert, Warning} from './components';
 import './main.css';
-import Navbar from './navbar';
-import Player from './player';
 import {store} from './store';
-import UndoAlert from './undoalert';
-import Warning from './warning';
 
 const App = () => {
-  const {currentVideo, loadingMessage, undoAlertVisible, channels, allChannels, init} = useStore(store);
+  const {currentVideo, loadingMessage, undoAlertVisible, channels, allChannels, init, useHorizontalLayout} = useStore(
+    store
+  );
 
   useEffect(() => {
     init();
@@ -23,7 +20,7 @@ const App = () => {
       <Navbar channels={allChannels} />
       {undoAlertVisible && <UndoAlert />}
       {currentVideo.video && <Player />}
-      <div className="flex flex-wrap justify-center">
+      <div className={`flex ${useHorizontalLayout ? 'overflow-auto pl-5' : 'flex-wrap'} justify-center`}>
         {allChannels.length > 0 && !channels.length && <h1 className="text-2xl p-6">Start by adding some channels!</h1>}
         {!loadingMessage && allChannels.length === 0 && (
           <Warning title="Couldn't load channels list!">

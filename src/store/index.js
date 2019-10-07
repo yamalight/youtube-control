@@ -1,8 +1,9 @@
 import {useRef, useState} from 'react';
-import {getStorage, loadChannel, loadChannels} from './api.js';
+import {getStorage, loadChannel, loadChannels} from '../api';
 
 // force auto-update if opened after 1h
 const RELOAD_EVERY_HOURS = 1;
+const DEFAULT_WATCHED_THRESHOLD = 85;
 
 const initFromCache = async () => {
   const result = {};
@@ -15,6 +16,21 @@ const initFromCache = async () => {
   const locallyViewed = await getStorage('locallyViewed');
   if (locallyViewed) {
     result.locallyViewed = locallyViewed;
+  }
+
+  const watchedThreshold = await getStorage('watchedThreshold');
+  if (watchedThreshold) {
+    result.watchedThreshold = watchedThreshold;
+  }
+
+  const openLinksInNewTab = await getStorage('openLinksInNewTab');
+  if (openLinksInNewTab) {
+    result.openLinksInNewTab = openLinksInNewTab;
+  }
+
+  const useHorizontalLayout = await getStorage('useHorizontalLayout');
+  if (useHorizontalLayout) {
+    result.useHorizontalLayout = useHorizontalLayout;
   }
 
   return result;
@@ -30,6 +46,9 @@ export const store = () => {
   const [allChannels, setAllChannels] = useState([]);
   const [undoAlertVisible, setUndoAlertVisible] = useState(false);
   const [currentVideo, setCurrentVideo] = useState({video: undefined, channel: undefined});
+  const [watchedThreshold, setWatchedThresholdVal] = useState(DEFAULT_WATCHED_THRESHOLD);
+  const [openLinksInNewTab, setOpenLinksInNewTabVal] = useState(false);
+  const [useHorizontalLayout, setUseHorizontalLayoutVal] = useState(false);
   const loadingRef = useRef();
   const undoRef = useRef();
   const undoTimeoutRef = useRef();
@@ -65,6 +84,15 @@ export const store = () => {
     }
     if (cache.locallyViewed) {
       locallyViewed = cache.locallyViewed;
+    }
+    if (cache.watchedThreshold) {
+      setWatchedThresholdVal(cache.watchedThreshold);
+    }
+    if (cache.openLinksInNewTab) {
+      setOpenLinksInNewTabVal(cache.openLinksInNewTab);
+    }
+    if (cache.useHorizontalLayout) {
+      setUseHorizontalLayoutVal(cache.useHorizontalLayout);
     }
     // reload videos too
     await refresh({givenChannels: cache.channels, forceUpdate});
@@ -201,6 +229,19 @@ export const store = () => {
     setUndoAlertVisible(false);
   };
 
+  const setWatchedThreshold = val => {
+    setWatchedThresholdVal(val);
+    chrome.storage.local.set({watchedThreshold: val});
+  };
+  const setOpenLinksInNewTab = val => {
+    setOpenLinksInNewTabVal(val);
+    chrome.storage.local.set({openLinksInNewTab: val});
+  };
+  const setUseHorizontalLayout = val => {
+    setUseHorizontalLayoutVal(val);
+    chrome.storage.local.set({useHorizontalLayout: val});
+  };
+
   return {
     init,
     loadingMessage,
@@ -220,5 +261,11 @@ export const store = () => {
     undoAlertVisible,
     currentVideo,
     setCurrentVideo,
+    watchedThreshold,
+    setWatchedThreshold,
+    openLinksInNewTab,
+    setOpenLinksInNewTab,
+    useHorizontalLayout,
+    setUseHorizontalLayout,
   };
 };

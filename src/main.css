@@ -18,7 +18,7 @@
 }
 
 .max-h-view {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 110px);
 }
 
 .rm-channel {
@@ -32,4 +32,8 @@
   top: 68px;
   right: 2px;
   cursor: pointer;
+}
+
+.min-w-3 {
+  min-width: calc(100vw / 3);
 }
