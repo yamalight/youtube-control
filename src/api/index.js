@@ -28,7 +28,7 @@ export const loadChannels = async ({ forceUpdate }) => {
     .flat()
     .filter(it => it.title !== 'Browse channels')
     .map(it => ({
-      name: it.formattedTitle.simpleText,
+      name: it.formattedTitle?.simpleText ?? it.title,
       url: `https://www.youtube.com${it.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
       thumbnail: it.thumbnail?.thumbnails?.[0]?.url,
       // original: it,
