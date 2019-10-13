@@ -45,8 +45,13 @@ export const store = () => {
   const [channelData, setChannelData] = useState({});
   const [allChannels, setAllChannels] = useState([]);
   const [undoAlertVisible, setUndoAlertVisible] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState({ video: undefined, channel: undefined });
-  const [watchedThreshold, setWatchedThresholdVal] = useState(DEFAULT_WATCHED_THRESHOLD);
+  const [currentVideo, setCurrentVideo] = useState({
+    video: undefined,
+    channel: undefined,
+  });
+  const [watchedThreshold, setWatchedThresholdVal] = useState(
+    DEFAULT_WATCHED_THRESHOLD
+  );
   const [openLinksInNewTab, setOpenLinksInNewTabVal] = useState(false);
   const [useHorizontalLayout, setUseHorizontalLayoutVal] = useState(false);
   const loadingRef = useRef();
@@ -69,7 +74,10 @@ export const store = () => {
       clearTimeout(undoTimeoutRef.current);
     }
     setUndoAlertVisible(true);
-    undoTimeoutRef.current = setTimeout(() => setUndoAlertVisible(false), 10000);
+    undoTimeoutRef.current = setTimeout(
+      () => setUndoAlertVisible(false),
+      10000
+    );
   };
 
   const init = async () => {
@@ -96,8 +104,6 @@ export const store = () => {
     }
     // reload videos too
     await refresh({ givenChannels: cache.channels, forceUpdate });
-    // load all channels list
-    await loadAllChannels({ forceUpdate });
     // save new init datetime
     chrome.storage.local.set({ initDate: Date.now() });
   };
@@ -211,6 +217,9 @@ export const store = () => {
       setLoading(`Loading videos: ${++loaded}/${chans.length} channels`);
     }
     setChannelData(newChannelData);
+    // load all channels list
+    await loadAllChannels({ forceUpdate });
+    // remove loading
     setLoading('');
   };
 
