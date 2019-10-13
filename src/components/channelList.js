@@ -4,12 +4,19 @@ import { store } from '../store';
 import Video from './video';
 
 export default ({ channel }) => {
-  const { channelData, hideWatched, removeChannel, setAllViewed, watchedThreshold, useHorizontalLayout } = useStore(
-    store
-  );
+  const {
+    channelData,
+    hideWatched,
+    removeChannel,
+    setAllViewed,
+    watchedThreshold,
+    useHorizontalLayout,
+  } = useStore(store);
   const [showRemove, setShowRemove] = useState(false);
 
-  const episodes = (channelData[channel.name] || []).filter(ep => (hideWatched ? ep.watched < watchedThreshold : true));
+  const episodes = (channelData[channel.name] || []).filter(ep =>
+    hideWatched ? ep.watched < watchedThreshold : true
+  );
 
   if (!episodes.length && hideWatched) {
     return <div />;
@@ -26,9 +33,13 @@ export default ({ channel }) => {
           <div
             className="flex flex-1 items-center"
             onMouseEnter={() => setShowRemove(true)}
-            onMouseLeave={() => setShowRemove(false)}>
+            onMouseLeave={() => setShowRemove(false)}
+          >
             {channel.thumbnail ? (
-              <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
+              <img
+                src={channel.thumbnail}
+                className="h-16 w-16 rounded-lg m-2"
+              />
             ) : (
               <div className="h-16 w-16 rounded-lg m-2 border-gray-600 border-solid border-2 bg-gray-600" />
             )}
@@ -38,7 +49,8 @@ export default ({ channel }) => {
                 onClick={e => {
                   e.preventDefault();
                   removeChannel(channel);
-                }}>
+                }}
+              >
                 X
               </div>
             )}
@@ -54,12 +66,14 @@ export default ({ channel }) => {
               onClick={e => {
                 e.preventDefault();
                 setAllViewed(channel);
-              }}>
+              }}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 32 32"
                 version="1.1"
-                className="fill-current w-4 h-4 mr-2">
+                className="fill-current w-4 h-4 mr-2"
+              >
                 <g id="surface1">
                   <path d="M 28.28125 6.28125 L 11 23.5625 L 3.71875 16.28125 L 2.28125 17.71875 L 10.28125 25.71875 L 11 26.40625 L 11.71875 25.71875 L 29.71875 7.71875 Z " />
                 </g>
@@ -69,7 +83,8 @@ export default ({ channel }) => {
           </div>
         </div>
       </div>
-      {episodes.length > 0 && episodes.map(ep => <Video key={ep.url} channel={channel} data={ep} />)}
+      {episodes.length > 0 &&
+        episodes.map(ep => <Video key={ep.url} channel={channel} data={ep} />)}
     </div>
   );
 };

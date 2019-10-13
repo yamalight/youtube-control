@@ -17,7 +17,10 @@ export default ({ close }) => {
     <ModalWrapper header="Settings" close={close}>
       <div className="w-full p-2">
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="watchThreshold">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="watchThreshold"
+          >
             Consider watched after (%)
           </label>
           <input
