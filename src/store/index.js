@@ -40,10 +40,19 @@ let locallyViewed = [];
 
 // removes videos from locally viewed list if they are no longer loaded
 const cleanupViewed = async channelData => {
+  if (!channelData) {
+    return;
+  }
   const locallyViewed = await getStorage('locallyViewed');
+  if (!locallyViewed) {
+    return;
+  }
   const loadedVideos = Object.keys(channelData)
     .map(ch => channelData[ch].map(vid => vid.id))
     .flat();
+  if (!loadedVideos || !loadedVideos.length) {
+    return;
+  }
   const locallyViewedFiltered = locallyViewed.filter(id =>
     loadedVideos.includes(id)
   );
