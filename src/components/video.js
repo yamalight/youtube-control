@@ -1,17 +1,31 @@
-import {useStore} from 'outstated';
-import React, {useState} from 'react';
-import {store} from '../store';
+import { useStore } from 'outstated';
+import React, { useState } from 'react';
+import { store } from '../store';
 
-export default ({data, channel}) => {
+const formatTime = data => {
+  if (data.publishedTime) {
+    return `Published ${data.publishedTime}`;
+  }
+
+  if (data.isLivestream) {
+    return 'Livestream';
+  }
+
+  if (data.premierTime) {
+    return `Premiers at ${new Date(premierTime).toLocaleString()}`;
+  }
+};
+
+export default ({ data, channel }) => {
   const [displayViewed, setDisplayViewed] = useState(false);
-  const {setViewed, setCurrentVideo, watchedThreshold, openLinksInNewTab} = useStore(store);
+  const { setViewed, setCurrentVideo, watchedThreshold, openLinksInNewTab } = useStore(store);
 
   const openVideo = e => {
     if (openLinksInNewTab) {
       return;
     }
     e.preventDefault();
-    setCurrentVideo({video: data, channel});
+    setCurrentVideo({ video: data, channel });
   };
 
   return (
@@ -19,19 +33,19 @@ export default ({data, channel}) => {
       className="flex flex-wrap"
       onMouseEnter={() => setDisplayViewed(true)}
       onMouseLeave={() => setDisplayViewed(false)}
-      style={{opacity: data.watched > 90 ? '0.5' : '1'}}>
+      style={{ opacity: data.watched > 90 ? '0.5' : '1' }}>
       <div className="flex w-full m-2 mt-4 mb-4">
         <div className="flex items-center">
           <div className="w-1/4">
             <img src={data.thumbnail} className="w-full" />
-            <div className="border-b border-4 border-red-600 shadow-lg rounded" style={{width: data.watched + '%'}} />
+            <div className="border-b border-4 border-red-600 shadow-lg rounded" style={{ width: data.watched + '%' }} />
             {displayViewed && data.watched < watchedThreshold ? (
               <a
                 href="#"
                 className="bg-white hover:bg-gray-100 text-gray-800 py-2 px-2 inline-flex items-center"
                 onClick={e => {
                   e.preventDefault();
-                  setViewed({channel, video: data});
+                  setViewed({ channel, video: data });
                 }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +69,7 @@ export default ({data, channel}) => {
                 {data.title}
               </a>
             </h2>
-            <span className="font-light text-sm">Published {data.publishedTime}</span>
+            <span className="font-light text-sm">{formatTime(data)}</span>
           </div>
         </div>
       </div>

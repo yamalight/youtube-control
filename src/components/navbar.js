@@ -1,13 +1,13 @@
-import {useStore} from 'outstated';
-import React, {useState} from 'react';
-import {store} from '../store';
+import { useStore } from 'outstated';
+import React, { useState } from 'react';
+import { store } from '../store';
 import AddChannelModal from './addChannel';
 import SettingsModal from './settings';
 
-export default ({channels}) => {
+export default ({ channels }) => {
   const [showAddChannelModal, setAddChannelModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const {toggleWatched, hideWatched, refresh} = useStore(store);
+  const { toggleWatched, hideWatched, refresh } = useStore(store);
 
   return (
     <>

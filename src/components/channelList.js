@@ -1,10 +1,10 @@
-import {useStore} from 'outstated';
-import React, {useState} from 'react';
-import {store} from '../store';
+import { useStore } from 'outstated';
+import React, { useState } from 'react';
+import { store } from '../store';
 import Video from './video';
 
-export default ({channel}) => {
-  const {channelData, hideWatched, removeChannel, setAllViewed, watchedThreshold, useHorizontalLayout} = useStore(
+export default ({ channel }) => {
+  const { channelData, hideWatched, removeChannel, setAllViewed, watchedThreshold, useHorizontalLayout } = useStore(
     store
   );
   const [showRemove, setShowRemove] = useState(false);

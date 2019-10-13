@@ -1,5 +1,5 @@
-import {useRef, useState} from 'react';
-import {getStorage, loadChannel, loadChannels} from '../api';
+import { useRef, useState } from 'react';
+import { getStorage, loadChannel, loadChannels } from '../api';
 
 // force auto-update if opened after 1h
 const RELOAD_EVERY_HOURS = 1;
@@ -45,7 +45,7 @@ export const store = () => {
   const [channelData, setChannelData] = useState({});
   const [allChannels, setAllChannels] = useState([]);
   const [undoAlertVisible, setUndoAlertVisible] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState({video: undefined, channel: undefined});
+  const [currentVideo, setCurrentVideo] = useState({ video: undefined, channel: undefined });
   const [watchedThreshold, setWatchedThresholdVal] = useState(DEFAULT_WATCHED_THRESHOLD);
   const [openLinksInNewTab, setOpenLinksInNewTabVal] = useState(false);
   const [useHorizontalLayout, setUseHorizontalLayoutVal] = useState(false);
@@ -95,32 +95,32 @@ export const store = () => {
       setUseHorizontalLayoutVal(cache.useHorizontalLayout);
     }
     // reload videos too
-    await refresh({givenChannels: cache.channels, forceUpdate});
+    await refresh({ givenChannels: cache.channels, forceUpdate });
     // load all channels list
-    await loadAllChannels({forceUpdate});
+    await loadAllChannels({ forceUpdate });
     // save new init datetime
-    chrome.storage.local.set({initDate: Date.now()});
+    chrome.storage.local.set({ initDate: Date.now() });
   };
 
-  const loadAllChannels = async ({forceUpdate}) => {
+  const loadAllChannels = async ({ forceUpdate }) => {
     setLoading('Loading channels list..');
-    const chs = await loadChannels({forceUpdate});
+    const chs = await loadChannels({ forceUpdate });
     setAllChannels(chs);
     setLoading('');
   };
 
   const addLocallyViewed = vid => {
     locallyViewed = [...locallyViewed, vid.id];
-    chrome.storage.local.set({locallyViewed: locallyViewed});
+    chrome.storage.local.set({ locallyViewed: locallyViewed });
   };
   const removeLocallyViewed = vid => {
     locallyViewed = locallyViewed.filter(v => v !== vid.id);
-    chrome.storage.local.set({locallyViewed: locallyViewed});
+    chrome.storage.local.set({ locallyViewed: locallyViewed });
   };
 
   const updateChannels = channels => {
     setChannels(channels);
-    chrome.storage.local.set({subscribedChannels: channels});
+    chrome.storage.local.set({ subscribedChannels: channels });
   };
   const addChannel = channel => {
     // do not add dups
@@ -128,19 +128,19 @@ export const store = () => {
       return;
     }
     const newChannels = [...channels, channel];
-    loadChannelData(channel, {forceLoad: true});
+    loadChannelData(channel, { forceLoad: true });
     updateChannels(newChannels);
   };
 
-  const loadChannelData = async (ch, {forceLoad} = {}) => {
+  const loadChannelData = async (ch, { forceLoad } = {}) => {
     setLoading(`Loading videos for ${ch.name}..`);
-    const data = await loadChannel(ch, {ignoreCache: forceLoad});
+    const data = await loadChannel(ch, { ignoreCache: forceLoad });
     const newChannelData = {
       ...channelData,
       [ch.name]: data.map(vid => {
         const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
-          return {...vid, watched: 100};
+          return { ...vid, watched: 100 };
         }
         return vid;
       }),
@@ -151,25 +151,25 @@ export const store = () => {
 
   const toggleWatched = () => setHideWatched(!hideWatched);
 
-  const setViewed = ({channel, video, watched = 100}) => {
+  const setViewed = ({ channel, video, watched = 100 }) => {
     const newChannelData = {
       ...channelData,
       [channel.name]: channelData[channel.name].map(vid => {
         if (vid.title === video.title) {
-          const newVid = {...vid, watched};
+          const newVid = { ...vid, watched };
           if (watched === 100) {
             addLocallyViewed(newVid);
           } else {
             removeLocallyViewed(newVid);
           }
-          undoRef.current = () => setViewed({channel, video, watched: 0});
+          undoRef.current = () => setViewed({ channel, video, watched: 0 });
           showUndoAlert();
           return newVid;
         }
         return vid;
       }),
     };
-    chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
+    chrome.storage.local.set({ [channel.name]: newChannelData[channel.name] });
     setChannelData(newChannelData);
   };
 
@@ -179,7 +179,7 @@ export const store = () => {
       [channel.name]: channelData[channel.name]
         .filter(vid => (watched === 100 ? vid.watched < 85 : true))
         .map(vid => {
-          const newVid = {...vid, watched};
+          const newVid = { ...vid, watched };
           if (watched === 100) {
             addLocallyViewed(newVid);
           } else {
@@ -190,21 +190,21 @@ export const store = () => {
           return newVid;
         }),
     };
-    chrome.storage.local.set({[channel.name]: newChannelData[channel.name]});
+    chrome.storage.local.set({ [channel.name]: newChannelData[channel.name] });
     setChannelData(newChannelData);
   };
 
-  const refresh = async ({givenChannels, forceUpdate = true} = {}) => {
+  const refresh = async ({ givenChannels, forceUpdate = true } = {}) => {
     const chans = givenChannels || channels;
     let loaded = 0;
     setLoading(`Loading videos: ${loaded}/${chans.length} channels`);
     const newChannelData = {};
     for (const channel of chans) {
-      const res = await loadChannel(channel, {ignoreCache: forceUpdate});
+      const res = await loadChannel(channel, { ignoreCache: forceUpdate });
       newChannelData[channel.name] = res.map(vid => {
         const viewed = locallyViewed.find(v => v === vid.id);
         if (viewed) {
-          return {...vid, watched: 100};
+          return { ...vid, watched: 100 };
         }
         return vid;
       });
@@ -231,15 +231,15 @@ export const store = () => {
 
   const setWatchedThreshold = val => {
     setWatchedThresholdVal(val);
-    chrome.storage.local.set({watchedThreshold: val});
+    chrome.storage.local.set({ watchedThreshold: val });
   };
   const setOpenLinksInNewTab = val => {
     setOpenLinksInNewTabVal(val);
-    chrome.storage.local.set({openLinksInNewTab: val});
+    chrome.storage.local.set({ openLinksInNewTab: val });
   };
   const setUseHorizontalLayout = val => {
     setUseHorizontalLayoutVal(val);
-    chrome.storage.local.set({useHorizontalLayout: val});
+    chrome.storage.local.set({ useHorizontalLayout: val });
   };
 
   return {

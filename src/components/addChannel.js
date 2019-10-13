@@ -1,10 +1,10 @@
-import {useStore} from 'outstated';
-import React, {useState} from 'react';
-import {store} from '../store';
+import { useStore } from 'outstated';
+import React, { useState } from 'react';
+import { store } from '../store';
 import ModalWrapper from './modal';
 
-const Channel = ({channel, close}) => {
-  const {addChannel} = useStore(store);
+const Channel = ({ channel, close }) => {
+  const { addChannel } = useStore(store);
 
   const addSelectedChannel = ch => {
     addChannel(channel);
@@ -32,8 +32,8 @@ const Channel = ({channel, close}) => {
   );
 };
 
-export default ({close, allChannels}) => {
-  const {channels} = useStore(store);
+export default ({ close, allChannels }) => {
+  const { channels } = useStore(store);
   const [filter, setFilter] = useState('');
 
   return (

@@ -1,9 +1,9 @@
-import {useStore} from 'outstated';
+import { useStore } from 'outstated';
 import React from 'react';
-import {store} from '../store';
+import { store } from '../store';
 import ModalWrapper from './modal';
 
-export default ({close}) => {
+export default ({ close }) => {
   const {
     watchedThreshold,
     setWatchedThreshold,

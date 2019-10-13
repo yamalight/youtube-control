@@ -1,12 +1,12 @@
-import {Provider, useStore} from 'outstated';
-import React, {useEffect} from 'react';
+import { Provider, useStore } from 'outstated';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import {Channel, Loader, Navbar, Player, UndoAlert, Warning} from './components';
+import { Channel, Loader, Navbar, Player, UndoAlert, Warning } from './components';
 import './main.css';
-import {store} from './store';
+import { store } from './store';
 
 const App = () => {
-  const {currentVideo, loadingMessage, undoAlertVisible, channels, allChannels, init, useHorizontalLayout} = useStore(
+  const { currentVideo, loadingMessage, undoAlertVisible, channels, allChannels, init, useHorizontalLayout } = useStore(
     store
   );
 

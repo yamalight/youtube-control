@@ -1,18 +1,18 @@
-import {useStore} from 'outstated';
-import React, {useEffect, useRef} from 'react';
+import { useStore } from 'outstated';
+import React, { useEffect, useRef } from 'react';
 import YouTubePlayer from 'youtube-player';
-import {store} from '../store';
+import { store } from '../store';
 
 const Player = () => {
   const {
-    currentVideo: {video, channel},
+    currentVideo: { video, channel },
     setCurrentVideo,
     setViewed,
   } = useStore(store);
   const playerRef = useRef();
   const playerObjectRef = useRef();
 
-  const close = () => setCurrentVideo({video: undefined, channel: undefined});
+  const close = () => setCurrentVideo({ video: undefined, channel: undefined });
 
   useEffect(() => {
     if (!video) {
@@ -33,7 +33,7 @@ const Player = () => {
     playerObjectRef.current.on('stateChange', event => {
       // if video has ended - mark it watched locally
       if (event.data === 0) {
-        setViewed({channel, video});
+        setViewed({ channel, video });
       }
     });
   }, [video]);

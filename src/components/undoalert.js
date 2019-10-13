@@ -1,9 +1,9 @@
-import {useStore} from 'outstated';
+import { useStore } from 'outstated';
 import React from 'react';
-import {store} from '../store';
+import { store } from '../store';
 
 export default () => {
-  const {undo} = useStore(store);
+  const { undo } = useStore(store);
 
   return (
     <div

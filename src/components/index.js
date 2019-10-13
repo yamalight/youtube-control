@@ -5,4 +5,4 @@ import Player from './player';
 import UndoAlert from './undoalert';
 import Warning from './warning';
 
-export {Channel, Loader, Navbar, Player, UndoAlert, Warning};
+export { Channel, Loader, Navbar, Player, UndoAlert, Warning };
