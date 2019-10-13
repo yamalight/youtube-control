@@ -12,7 +12,7 @@ const formatTime = data => {
   }
 
   if (data.premierTime) {
-    return `Premiers at ${new Date(premierTime).toLocaleString()}`;
+    return `Premiers at ${new Date(data.premierTime).toLocaleString()}`;
   }
 };
 
