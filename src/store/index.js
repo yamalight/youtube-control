@@ -38,6 +38,18 @@ const initFromCache = async () => {
 
 let locallyViewed = [];
 
+// removes videos from locally viewed list if they are no longer loaded
+const cleanupViewed = async channelData => {
+  const locallyViewed = await getStorage('locallyViewed');
+  const loadedVideos = Object.keys(channelData)
+    .map(ch => channelData[ch].map(vid => vid.id))
+    .flat();
+  const locallyViewedFiltered = locallyViewed.filter(id =>
+    loadedVideos.includes(id)
+  );
+  chrome.storage.local.set({ locallyViewed: locallyViewedFiltered });
+};
+
 export const store = () => {
   const [loadingMessage, setLoadingMessage] = useState('Initializing..');
   const [hideWatched, setHideWatched] = useState(true);
@@ -217,6 +229,8 @@ export const store = () => {
       setLoading(`Loading videos: ${++loaded}/${chans.length} channels`);
     }
     setChannelData(newChannelData);
+    // cleanup locally viewed list
+    await cleanupViewed(newChannelData);
     // load all channels list
     await loadAllChannels({ forceUpdate });
     // remove loading
