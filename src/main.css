@@ -8,9 +8,14 @@
   --bg-gray-1000: #0f131a;
 }
 
+html {
+  @apply h-full;
+}
+
 body {
   background-color: var(--bg-gray-1000);
   @apply text-gray-100;
+  @apply h-full;
 }
 
 .loader {

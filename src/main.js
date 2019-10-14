@@ -28,14 +28,16 @@ const App = () => {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex h-full flex-col">
       {loadingMessage && <Loader message={loadingMessage} />}
       <Navbar channels={allChannels} />
       {undoAlertVisible && <UndoAlert />}
       {currentVideo.video && <Player />}
       <div
         className={`flex ${
-          useHorizontalLayout ? 'overflow-auto' : 'flex-wrap justify-center'
+          useHorizontalLayout
+            ? 'h-full overflow-auto'
+            : 'flex-wrap justify-center'
         }`}
       >
         {allChannels.length > 0 && !channels.length && (
@@ -64,5 +66,5 @@ ReactDOM.render(
   <Provider stores={[store]}>
     <App />
   </Provider>,
-  document.getElementById('container')
+  document.body
 );
