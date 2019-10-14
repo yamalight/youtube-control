@@ -11,16 +11,16 @@ const Channel = ({ channel, close }) => {
   };
 
   return (
-    <div className="flex flex-wrap shadow border rounded-lg  m-2">
+    <div className="flex flex-wrap shadow border border-gray-700 bg-gray-800 rounded-lg m-2">
       <div className="flex w-full">
         <div className="flex items-center">
           {channel.thumbnail ? (
             <img src={channel.thumbnail} className="h-16 w-16 rounded-lg m-2" />
           ) : (
-            <div className="h-16 w-16 rounded-lg m-2 border-gray-600 border-solid border-2 bg-gray-600" />
+            <div className="h-16 w-16 rounded-lg m-2 border-gray-700 border-solid border-2 bg-gray-800" />
           )}
           <div className="flex flex-col p-4">
-            <h2 className="font-bold text-lg text-tial-400">
+            <h2 className="font-bold text-lg">
               <a href="#" onClick={() => addSelectedChannel(channel)}>
                 {channel.name}
               </a>
@@ -40,7 +40,7 @@ export default ({ close, allChannels }) => {
     <ModalWrapper header="Add channel column" close={close}>
       <div className="w-full p-2">
         <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
           placeholder="Search channel.."
           value={filter}

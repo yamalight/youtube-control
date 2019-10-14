@@ -18,13 +18,13 @@ export default ({ close }) => {
       <div className="w-full p-2">
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-sm font-bold mb-2"
             htmlFor="watchThreshold"
           >
             Consider watched after (%)
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
             id="watchThreshold"
             type="text"
             placeholder="Watched after %"
@@ -34,7 +34,7 @@ export default ({ close }) => {
         </div>
 
         <div className="md:flex md:items-center mb-4">
-          <label className="block text-gray-700 font-bold">
+          <label className="block font-bold">
             <input
               className="mr-2 leading-tight"
               type="checkbox"
@@ -46,7 +46,7 @@ export default ({ close }) => {
         </div>
 
         <div className="md:flex md:items-center mb-4">
-          <label className="block text-gray-700 font-bold">
+          <label className="block font-bold">
             <input
               className="mr-2 leading-tight"
               type="checkbox"

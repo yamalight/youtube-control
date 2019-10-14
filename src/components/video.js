@@ -48,7 +48,7 @@ export default ({ data, channel }) => {
               {displayViewed && data.watched < watchedThreshold ? (
                 <a
                   href="#"
-                  className="bg-white border border-black-500 text-gray-800 py-2 px-2 inline-flex items-center absolute top-0 w-full h-full"
+                  className="bg-gray-800 border border-gray-700 py-2 px-2 inline-flex items-center absolute top-0 w-full h-full"
                   onClick={e => {
                     e.preventDefault();
                     setViewed({ channel, video: data });
@@ -70,10 +70,12 @@ export default ({ data, channel }) => {
                 ''
               )}
             </div>
-            <div
-              className="border-b border-4 border-red-600 shadow-lg rounded"
-              style={{ width: data.watched + '%' }}
-            />
+            {data.watched > 0 && (
+              <div
+                className="border-b border-4 border-red-600 shadow-lg rounded"
+                style={{ width: data.watched + '%' }}
+              />
+            )}
           </div>
 
           <a href={data.url} target="_blank" onClick={e => openVideo(e)}>

@@ -42,13 +42,13 @@ const Player = () => {
 
   return (
     <div className="main-modal fixed w-full h-100 inset-0 z-50 overflow-hidden flex justify-center items-center animated fadeIn faster modal-bg p-12">
-      <div className="border border-teal-500 shadow-lg modal-container bg-white mx-auto rounded shadow-lg z-50 overflow-hidden max-h-full w-full h-full">
-        <div className="modal-content py-4 text-left px-6 flex flex-col max-h-screen h-full">
+      <div className="border border-gray-700 shadow-lg modal-container bg-white mx-auto rounded shadow-lg z-50 overflow-hidden max-h-full w-full h-full">
+        <div className="modal-content py-4 text-left px-6 flex flex-col max-h-screen h-full bg-gray-900">
           <div className="flex justify-between items-center pb-3">
             <p className="text-2xl font-bold">{video.title}</p>
             <div className="modal-close cursor-pointer z-50" onClick={close}>
               <svg
-                className="fill-current text-black"
+                className="fill-current"
                 xmlns="http://www.w3.org/2000/svg"
                 width="18"
                 height="18"

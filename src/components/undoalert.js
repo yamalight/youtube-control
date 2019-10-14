@@ -7,7 +7,7 @@ export default () => {
 
   return (
     <div
-      className="undo-alert fixed bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
+      className="undo-alert fixed bg-gray-800 border-t-4 border-gray-700 rounded-b text-gray-100 px-4 py-3 shadow-md"
       role="alert"
       onClick={() => undo()}
     >

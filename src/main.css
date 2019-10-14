@@ -4,13 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-gray-1000: #0f131a;
+}
+
+body {
+  background-color: var(--bg-gray-1000);
+  @apply text-gray-100;
+}
+
 .loader {
   max-width: 200px;
   height: 200px;
 }
 
 .ball-spin-fade-loader > div {
-  background-color: #9b2c2c;
+  @apply bg-gray-300;
 }
 
 .modal-bg {
