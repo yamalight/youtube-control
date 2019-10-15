@@ -3,7 +3,7 @@
 Simple lists of videos for your Youtube subscriptions.  
 Free, open source alternative to Youtube Video Deck.
 
-![Mission Control for Youtube in action](./media/screenshot.jpg 'Mission Control for Youtube in action')
+![Mission Control for Youtube in action](./media/screenshot.png 'Mission Control for Youtube in action')
 
 ## Building locally
 
