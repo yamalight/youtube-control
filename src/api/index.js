@@ -1,5 +1,7 @@
-export const getStorage = key =>
-  new Promise(r => chrome.storage.local.get([key], result => r(result[key])));
+export const getStorage = (key) =>
+  new Promise((r) =>
+    chrome.storage.local.get([key], (result) => r(result[key]))
+  );
 
 export const loadChannels = async ({ forceUpdate }) => {
   const cache = await getStorage('channelCache');
@@ -7,7 +9,7 @@ export const loadChannels = async ({ forceUpdate }) => {
     return cache;
   }
 
-  const body = await fetch('https://www.youtube.com').then(r => r.text());
+  const body = await fetch('https://www.youtube.com').then((r) => r.text());
   const jsonRegex = /var ytInitialGuideData = {(.+?)};\n/gi;
   const res = jsonRegex.exec(body);
   if (!res) {
@@ -20,14 +22,14 @@ export const loadChannels = async ({ forceUpdate }) => {
   }
   const channels = items
     .map(
-      it =>
+      (it) =>
         it.guideCollapsibleEntryRenderer?.expandableItems.map(
-          it => it.guideEntryRenderer
+          (it) => it.guideEntryRenderer
         ) ?? it.guideEntryRenderer
     )
     .flat()
-    .filter(it => it.title !== 'Browse channels')
-    .map(it => ({
+    .filter((it) => it.title !== 'Browse channels')
+    .map((it) => ({
       name: it.formattedTitle?.simpleText ?? it.title,
       url: `https://www.youtube.com${it.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
       thumbnail: it.thumbnail?.thumbnails?.[0]?.url,
@@ -45,7 +47,7 @@ export const loadChannel = async (ch, { ignoreCache = false } = {}) => {
   }
 
   const { url } = ch;
-  const body = await fetch(`${url}/videos`).then(r => r.text());
+  const body = await fetch(`${url}/videos`).then((r) => r.text());
   const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
   const regexRes = jsonRegex.exec(body);
   if (!regexRes) {
@@ -65,19 +67,19 @@ export const loadChannel = async (ch, { ignoreCache = false } = {}) => {
   const res = videos.map(({ gridVideoRenderer: vid }) => ({
     id: vid.videoId,
     thumbnail: vid.thumbnail.thumbnails[0].url,
-    title: vid.title.simpleText,
+    title: vid.title.simpleText ?? vid.title.runs?.[0]?.text,
     publishedTime: vid.publishedTimeText?.simpleText,
     premierTime: vid.upcomingEventData?.startTime,
     isLivestream:
       vid.badges?.find(
-        b => b.metadataBadgeRenderer.style === 'BADGE_STYLE_TYPE_LIVE_NOW'
+        (b) => b.metadataBadgeRenderer.style === 'BADGE_STYLE_TYPE_LIVE_NOW'
       ) !== undefined,
     viewCount: vid.viewCountText?.simpleText ?? 0,
     watched: vid.thumbnailOverlays.find(
-      it => it.thumbnailOverlayResumePlaybackRenderer !== undefined
+      (it) => it.thumbnailOverlayResumePlaybackRenderer !== undefined
     )
       ? vid.thumbnailOverlays.find(
-          it => it.thumbnailOverlayResumePlaybackRenderer !== undefined
+          (it) => it.thumbnailOverlayResumePlaybackRenderer !== undefined
         ).thumbnailOverlayResumePlaybackRenderer.percentDurationWatched
       : 0,
     url: `https://www.youtube.com${vid.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
