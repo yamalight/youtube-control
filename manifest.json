@@ -3,7 +3,7 @@
 
   "name": "Mission Control for Youtube",
   "description": "Simple lists of videos for your Youtube subscriptions (like Video Deck)",
-  "version": "1.0",
+  "version": "1.0.1",
 
   "background": {
     "scripts": ["js/background.js"],
