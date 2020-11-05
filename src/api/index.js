@@ -9,31 +9,32 @@ export const loadChannels = async ({ forceUpdate }) => {
     return cache;
   }
 
-  const body = await fetch('https://www.youtube.com').then((r) => r.text());
-  const jsonRegex = /var ytInitialGuideData = {(.+?)};\n/gi;
+  const body = await fetch('https://www.youtube.com/feed/channels').then((r) =>
+    r.text()
+  );
+  const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
   const res = jsonRegex.exec(body);
   if (!res) {
     return [];
   }
   const obj = JSON.parse(`{${res[1]}}`);
-  const items = obj.items?.[1]?.guideSubscriptionsSectionRenderer?.items;
+  const items =
+    obj?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer
+      ?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer
+      ?.contents?.[0]?.shelfRenderer?.content?.expandedShelfContentsRenderer
+      ?.items;
   if (!items) {
     return [];
   }
   const channels = items
-    .map(
-      (it) =>
-        it.guideCollapsibleEntryRenderer?.expandableItems.map(
-          (it) => it.guideEntryRenderer
-        ) ?? it.guideEntryRenderer
-    )
+    .map((it) => it.channelRenderer)
     .flat()
-    .filter((it) => it.title !== 'Browse channels')
+    .filter((it) => it.title?.simpleText !== 'Browse channels')
     .map((it) => ({
-      name: it.formattedTitle?.simpleText ?? it.title,
-      url: `https://www.youtube.com${it.navigationEndpoint.commandMetadata.webCommandMetadata.url}`,
-      thumbnail: it.thumbnail?.thumbnails?.[0]?.url,
-      // original: it,
+      name: it.title?.simpleText,
+      url: `https://www.youtube.com/channel/${it.channelId}`,
+      thumbnail: `https:${it.thumbnail?.thumbnails?.[0]?.url}`,
+      original: it,
     }));
 
   chrome.storage.local.set({ channelCache: channels });
