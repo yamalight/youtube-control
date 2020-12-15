@@ -1,3 +1,7 @@
+const regexWindow = /window\["ytInitialData"\] = {(.+?)};\n/gi;
+const regexVar = /var ytInitialData = {(.+?)};<\//gi;
+const regexVarChan = /var ytInitialData = {(.+?)}<\/script>/gi;
+
 export const getStorage = (key) =>
   new Promise((r) =>
     chrome.storage.local.get([key], (result) => r(result[key]))
@@ -12,12 +16,15 @@ export const loadChannels = async ({ forceUpdate }) => {
   const body = await fetch('https://www.youtube.com/feed/channels').then((r) =>
     r.text()
   );
-  const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
+
+  const isWindow = body.includes('window["ytInitialData"]');
+  const jsonRegex = isWindow ? regexWindow : regexVarChan;
   const res = jsonRegex.exec(body);
   if (!res) {
     return [];
   }
-  const obj = JSON.parse(`{${res[1]}}`);
+  const txt = isWindow ? res[1] : res[1].split('};</script>')[0];
+  const obj = JSON.parse(`{${txt}}`);
   const items =
     obj?.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer
       ?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer
@@ -49,7 +56,9 @@ export const loadChannel = async (ch, { ignoreCache = false } = {}) => {
 
   const { url } = ch;
   const body = await fetch(`${url}/videos`).then((r) => r.text());
-  const jsonRegex = /window\["ytInitialData"\] = {(.+?)};\n/gi;
+  const jsonRegex = body.includes('window["ytInitialData"]')
+    ? regexWindow
+    : regexVar;
   const regexRes = jsonRegex.exec(body);
   if (!regexRes) {
     return [];

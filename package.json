@@ -1,6 +1,6 @@
 {
   "name": "youtube-control",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Simple lists of videos for your Youtube subscriptions (like Video Deck)",
   "main": "index.js",
